@@ -1,0 +1,5 @@
+*
+!.gitignore
+!append-file.js
+!compose-factory.js
+!index.js
