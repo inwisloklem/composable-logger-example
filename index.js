@@ -45,21 +45,21 @@ const decorateLogger = (target = {}, { loggerProviders = ['logStdout'] }) => {
       throw new Error('No function provided')
     }
 
-    return function () {
-      let countLoggers = 0
+    return function (...args) {
+      let count = 0
 
       loggerProviders.forEach(providerName => {
         if (target[providerName]) {
-          countLoggers += 1
+          count += 1
           target[providerName](message, level)
         }
       })
 
-      if (countLoggers < 1) {
+      if (count < 1) {
         throw new Error('Minimum one logger provider required')
       }
 
-      return func()
+      return func(...args)
     }
   }
 
@@ -69,7 +69,12 @@ const decorateLogger = (target = {}, { loggerProviders = ['logStdout'] }) => {
 const createLogger = composeFactory(addLogStdout, addLogFile, decorateLogger)
 const logger = createLogger({ file: './.log2', loggerProviders: ['logStdout', 'logFile'] })
 
-function test () {}
+function test (a, b) {
+  return a + b
+}
+
 const loggingTest = logger.decorate(test, { message: 'Talk is cheap. Show me the code.', level: 'error' })
 
-loggingTest()
+const result = loggingTest(1, 2)
+
+console.log(result)
